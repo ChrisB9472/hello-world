@@ -80,6 +80,14 @@ getMessages = async () => {
   }
 };
 
+
+renderInputToolbar = (props) => {
+  if (this.state.isConnected == false) {
+  } else {
+    return <InputToolbar {...props} />;
+  }
+}
+
   componentDidMount() {
     this.getMessages();
     // Set the page title once Chat is loaded
@@ -124,10 +132,8 @@ getMessages = async () => {
          
 
       } else {
-          this.setState({ isConnected: false });
-          console.log('offline');
-          //retrieve chat from asyncstorage
-          this.getMessages();
+           this.setState({ isConnected: false });
+        this.getMessages();
       }   
   });
 }
@@ -136,7 +142,7 @@ getMessages = async () => {
 
 componentWillUnmount() {
   this.authUnsubscribe();
-  this.unsubscribe();
+  
 }
 
  onSend(messages = []) {
@@ -199,16 +205,6 @@ addMessage = () => {
 
 
 
-renderInputToolbar(props) {
-  if (this.state.isConnected == false) {
-  } else {
-    return(
-      <InputToolbar
-      {...props}
-      />
-    );
-  }
-}
   
 
   render() {
@@ -220,8 +216,9 @@ renderInputToolbar(props) {
     return (
       <View style={{ flex: 1}}>
        <GiftedChat
-                    
+                    renderInputToolbar={this.renderInputToolbar}
                     messages={this.state.messages}
+                    
                     onSend={messages => this.onSend(messages)}
                     user={this.state.user}
                     />{ Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null
