@@ -5,7 +5,8 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import CustomActions from "./CustomActions";
+import MapView from 'react-native-maps';
 
 
 
@@ -203,6 +204,27 @@ addMessage = () => {
 }
 
 
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+}
+
+renderCustomView(props) {
+  const { currentMessage } = props;
+  if (currentMessage.location) {
+    return (
+      <MapView
+        style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+        region={{
+          latitude: parseInt(currentMessage.location.latitude),
+          longitude: parseInt(currentMessage.location.longitude),
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      />
+    );
+  }
+  return null;
+}
 
 
   
@@ -218,7 +240,8 @@ addMessage = () => {
        <GiftedChat
                     renderInputToolbar={this.renderInputToolbar}
                     messages={this.state.messages}
-                    
+                    renderActions={this.renderCustomActions}
+                    renderCustomView={this.renderCustomView}
                     onSend={messages => this.onSend(messages)}
                     user={this.state.user}
                     />{ Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null
