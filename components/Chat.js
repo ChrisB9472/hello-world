@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Platform, KeyboardAvoidingView, Text, Button, TextInput, LogBox  } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import NetInfo from '@react-native-community/netinfo';
@@ -68,7 +68,20 @@ export default class Chat extends React.Component {
     });
 };
 
+getMessages = async () => {
+  let messages = '';
+  try {
+    messages = await AsyncStorage.getItem('messages') || [];
+    this.setState({
+      messages: JSON.parse(messages)
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
   componentDidMount() {
+    this.getMessages();
     // Set the page title once Chat is loaded
     let { name } = this.props.route.params
     // Adds the name to top of screen
@@ -135,6 +148,25 @@ componentWillUnmount() {
   });
 }
 
+saveMessages = async () => {
+  try {
+    await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+async deleteMessages() {
+  try {
+    await AsyncStorage.removeItem('messages');
+    this.setState({
+      messages: []
+    })
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 onCollectionUpdate = (querySnapshot) => {
   const messages = [];
   // through each document
@@ -164,26 +196,19 @@ addMessage = () => {
   });
 }
 
-getMessages = async () => {
-  let messages = '';
-  try {
-    messages = await AsyncStorage.getItem('messages') || [];
-    this.setState({
-      messages: JSON.parse(messages)
-    });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
 
-saveMessages = async () => {
-  try {
-    await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
-  } catch (error) {
-    console.log(error.message);
+
+
+renderInputToolbar(props) {
+  if (this.state.isConnected == false) {
+  } else {
+    return(
+      <InputToolbar
+      {...props}
+      />
+    );
   }
 }
-
   
 
   render() {
